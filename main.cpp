@@ -46,7 +46,7 @@ bool get_args() {
 				std::cout << "Error - Unexpected Argument '" << arg[i] << "' at line " << line << std::endl;
 				return false;
 			}
-			std::cout << " Argument " << arg[i] << std::endl;
+			std::cout << " Arg " << arg[i] << std::endl;
 		}
 		else {
 			return true;
@@ -66,7 +66,8 @@ int main(int argc, char** argv) {
 	}
 	else {
 		in = std::ifstream(argv[1]);
-		std::ofstream out("instructions.txt");
+		std::ofstream out("data.inst");
+		std::ofstream out_t("data.txt");
 		if (!in.good()) {
 			return 1;
 		}
@@ -78,10 +79,11 @@ int main(int argc, char** argv) {
 			while (in >> chars) {
 				args = 0;
 				line++;
-				std::cout << "Opcode " << chars << std::endl;
+				std::cout << "Op " << chars << std::endl;
 				if (!get_args()) {
 					in.close();
 					out.close();
+					out_t.close();
 					return 1;
 				}
 				else if (chars == "ADD") {
@@ -418,13 +420,18 @@ int main(int argc, char** argv) {
 					std::cout << "Error - Unknown Opcode '" << chars << "' at line " << line << std::endl;
 					in.close();
 					out.close();
+					out_t.close();
 					return 1;
 				}
 				std::cout << "Instruction: " << code << std::endl;
-				out << code << std::endl;
+				out.put(code & 0xff);
+				out.put((code >> 8) & 0xff);
+				out_t << code << ',' << std::endl;
 			}
 			out.close();
-			std::cout << "Instructions saved to 'instructions.txt'" << std::endl;
+			out_t.close();
+			std::cout << "Compiled binary to 'data.inst'" << std::endl;
+			std::cout << "Compiled text to 'data.txt'" << std::endl;
 		}
 	}
 	return 0;
