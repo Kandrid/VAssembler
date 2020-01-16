@@ -10,7 +10,7 @@ int line = 0;
 bool is_arg(const std::string& s)
 {
 	std::string::const_iterator it = s.begin();
-	if (s.size() == 1 && *it == 'R') {
+	if (s.size() != 2 && *it == 'R') {
 		return false;
 	}
 	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && (*it == 'R' || *it == '-')))) ++it;
