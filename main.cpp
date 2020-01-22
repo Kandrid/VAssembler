@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
 			line = 0;
 			uint16_t code = 0;
 			while (in >> chars) {
+				bool single = true;
 				args = 0;
 				line++;
 				std::cout << "Op " << chars << std::endl;
@@ -236,13 +237,8 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "LDR") {
-					if (args == 2 && is_reg(arg[0])) {
-						if (is_reg(arg[1])) {
-							code = (13 << 11) + ((arg[0][1] - '0') << 8) + ((arg[1][1] - '0') << 5);
-						}
-						else {
-							code = (13 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0b1111) + 16;
-						}
+					if (args == 2 && is_reg(arg[0]) && is_reg(arg[0])) {
+						code = (13 << 11) + ((arg[0][1] - '0') << 8) + ((arg[1][1] - '0') << 5);
 					}
 					else {
 						arg_error();
@@ -285,9 +281,18 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
+				else if (chars == "STR") {
+					if (args == 2 && is_reg(arg[0]) && is_reg(arg[1])) {
+						code = (18 << 11) + ((arg[0][1] - '0') << 8) + ((arg[1][1] - '0') << 5);
+					}
+					else {
+						arg_error();
+						break;
+					}
+				}
 				else if (chars == "BRn") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (4 << 8) +((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (4 << 8) +((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -296,7 +301,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "BRz") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (2 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (2 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -305,7 +310,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "BRp") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (1 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (1 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -314,7 +319,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "BRnz") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (6 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (6 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -323,7 +328,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "BRzp") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (3 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (3 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -332,7 +337,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "BRnp") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (5 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (5 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -341,7 +346,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "BRnzp") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (18 << 11) + (7 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
+						code = (19 << 11) + (7 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -351,10 +356,10 @@ int main(int argc, char** argv) {
 				else if (chars == "JMP") {
 					if (args == 1) {
 						if (is_reg(arg[0])) {
-							code = (19 << 11) + ((arg[0][1] - '0') << 5);
+							code = (20 << 11) + ((arg[0][1] - '0') << 5);
 						}
 						else {
-							code = (19 << 11) + ((uint16_t)std::stoi(arg[0]) & 0b1111) + 16;
+							code = (20 << 11) + ((uint16_t)std::stoi(arg[0]) & 0b1111) + 16;
 						}
 					}
 					else {
@@ -364,7 +369,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "JSR") {
 					if (args == 1 && !is_reg(arg[0])) {
-						code = (20 << 11) + (4 << 8) + ((uint16_t)std::stoi(arg[0]) & 0x3ff);
+						code = (21 << 11) + (4 << 8) + ((uint16_t)std::stoi(arg[0]) & 0x3ff);
 					}
 					else {
 						arg_error();
@@ -373,7 +378,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "JSRR") {
 					if (args == 1 && is_reg(arg[0])) {
-						code = (21 << 11) + ((arg[0][1] - '0') << 5);
+						code = (22 << 11) + ((arg[0][1] - '0') << 5);
 					}
 					else {
 						arg_error();
@@ -382,7 +387,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "RET") {
 					if (args == 0) {
-						code = (22 << 11) + (7 << 5);
+						code = (23 << 11) + (7 << 5);
 					}
 					else {
 						arg_error();
@@ -391,7 +396,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "CLR") {
 					if (args == 1 && is_reg(arg[0])) {
-						code = (23 << 11) + ((arg[0][1] - '0') << 8);
+						code = (24 << 11) + ((arg[0][1] - '0') << 8);
 					}
 					else {
 						arg_error();
@@ -400,7 +405,7 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "IN") {
 					if (args == 1 && is_reg(arg[0])) {
-						code = (24 << 11) + ((arg[0][1] - '0') << 8);
+						code = (25 << 11) + ((arg[0][1] - '0') << 8);
 					}
 					else {
 						arg_error();
@@ -409,7 +414,25 @@ int main(int argc, char** argv) {
 				}
 				else if (chars == "OUT") {
 					if (args == 1 && is_reg(arg[0])) {
-						code = (25 << 11) + ((arg[0][1] - '0') << 5);
+						code = (26 << 11) + ((arg[0][1] - '0') << 5);
+					}
+					else {
+						arg_error();
+						break;
+					}
+				}
+				else if (chars == "PUT") {
+					if (args == 1 && is_reg(arg[0])) {
+						code = (26 << 11) + (2 << 8) + ((arg[0][1] - '0') << 5);
+					}
+					else {
+						arg_error();
+						break;
+					}
+				}
+				else if (chars == "SET") {
+					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+						code = (27 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0xff);
 					}
 					else {
 						arg_error();
@@ -423,10 +446,11 @@ int main(int argc, char** argv) {
 					out_t.close();
 					return 1;
 				}
-				std::cout << "Instruction: " << code << std::endl;
-				out.put(code & 0xff);
-				out.put((code >> 8) & 0xff);
-				out_t << code << ',' << std::endl;
+				if (single) {
+					out.put(code & 0xff);
+					out.put((code >> 8) & 0xff);
+					out_t << code << ',' << std::endl;
+				}
 			}
 			out.close();
 			out_t.close();
