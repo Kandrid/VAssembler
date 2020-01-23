@@ -6,6 +6,7 @@ std::string arg[3];
 std::ifstream in;
 int args = 0;
 int line = 0;
+bool success = true;
 
 bool is_arg(const std::string& s)
 {
@@ -58,6 +59,7 @@ bool get_args() {
 
 void arg_error() {
 	std::cout << "Error - Invalid Arguments at line " << line << std::endl;
+	success = false;
 }
 
 int main(int argc, char** argv) {
@@ -425,6 +427,9 @@ int main(int argc, char** argv) {
 					if (args == 1 && is_reg(arg[0])) {
 						code = (26 << 11) + (2 << 8) + ((arg[0][1] - '0') << 5);
 					}
+					else if (args == 2 && is_reg(arg[0]) && arg[1] == "1") {
+						code = (26 << 11) + (1 << 10) + (2 << 8) + ((arg[0][1] - '0') << 5);
+					}
 					else {
 						arg_error();
 						break;
@@ -439,11 +444,57 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
+				else if (chars == "GETS") {
+					if (args == 1 && is_reg(arg[0])) {
+						code = (28 << 11) + ((arg[0][1] - '0') << 5);
+					}
+					else {
+						arg_error();
+						break;
+					}
+				}
+				/*else if (chars == "PUTS") {
+					single = false;
+					if (args == 1 && is_reg(arg[0])) {
+						code = 0b0110100100000000;
+						out.put(code & 0xff);
+						out.put((code >> 8) & 0xff);
+						out_t << code << ',' << std::endl;
+						code = 0b0000100100110000;
+						out.put(code & 0xff);
+						out.put((code >> 8) & 0xff);
+						out_t << code << ',' << std::endl;
+						code = 0b1001101000000011;
+						out.put(code & 0xff);
+						out.put((code >> 8) & 0xff);
+						out_t << code << ',' << std::endl;
+						code = 0b1101001000000000;
+						out.put(code & 0xff);
+						out.put((code >> 8) & 0xff);
+						out_t << code << ',' << std::endl;
+						code = 0b0010100000000000;
+						out.put(code & 0xff);
+						out.put((code >> 8) & 0xff);
+						out_t << code << ',' << std::endl;
+						code = 0b1001111111111010;
+						out.put(code & 0xff);
+						out.put((code >> 8) & 0xff);
+						out_t << code << ',' << std::endl;
+					}
+					else if (args == 2 && is_reg(arg[0]) && arg[1] == "1") {
+
+					}
+					else {
+						arg_error();
+						break;
+					}
+				}*/
 				else {
 					std::cout << "Error - Unknown Opcode '" << chars << "' at line " << line << std::endl;
 					in.close();
 					out.close();
 					out_t.close();
+					success = false;
 					return 1;
 				}
 				if (single) {
@@ -454,8 +505,10 @@ int main(int argc, char** argv) {
 			}
 			out.close();
 			out_t.close();
-			std::cout << "Compiled binary to 'data.inst'" << std::endl;
-			std::cout << "Compiled text to 'data.txt'" << std::endl;
+			if (success) {
+				std::cout << "Compiled binary to 'data.inst'" << std::endl;
+				std::cout << "Compiled text to 'data.txt'" << std::endl;
+			}
 		}
 	}
 	return 0;
