@@ -253,7 +253,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "LDR") {
-					if (args == 2 && is_reg(arg[0]) && is_reg(arg[0])) {
+					if (args == 2 && is_reg(arg[0]) && is_reg(arg[1])) {
 						code = (13 << 11) + ((arg[0][1] - '0') << 8) + ((arg[1][1] - '0') << 5);
 					}
 					else {
@@ -431,6 +431,9 @@ int main(int argc, char** argv) {
 				else if (chars == "OUT") {
 					if (args == 1 && is_reg(arg[0])) {
 						code = (26 << 11) + ((arg[0][1] - '0') << 5);
+					}
+					else if (args == 2 && is_reg(arg[0]) && arg[1] == "1") {
+						code = (26 << 11) + (1 << 10) + ((arg[0][1] - '0') << 5);
 					}
 					else {
 						arg_error();
