@@ -10,12 +10,19 @@ bool success = true;
 
 bool is_arg(const std::string& s)
 {
+	if (s[0] == '#' && s[s.size() - 1] == '#' && s.size() > 2) {
+		return true;
+	}
 	std::string::const_iterator it = s.begin();
 	if (s.size() != 2 && *it == 'R') {
 		return false;
 	}
 	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && (*it == 'R' || *it == '-')))) ++it;
 	return !s.empty() && it == s.end();
+}
+
+bool is_str(const std::string& s) {
+	return (s[0] == '#' && s[s.size() - 1] == '#' && s.size() > 2);
 }
 
 bool is_reg(const std::string& s)
@@ -25,6 +32,13 @@ bool is_reg(const std::string& s)
 		return false;
 	}
 	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && *it == 'R'))) ++it;
+	return !s.empty() && it == s.end();
+}
+
+bool is_num(const std::string& s)
+{
+	std::string::const_iterator it = s.begin();
+	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && *it == '-'))) ++it;
 	return !s.empty() && it == s.end();
 }
 
@@ -146,7 +160,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "INC") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (5 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0b1111) + 16;
 					}
 					else if (args == 1 && is_reg(arg[0])) {
@@ -158,7 +172,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "DEC") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (6 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0b1111) + 16;
 					}
 					else if (args == 1 && is_reg(arg[0])) {
@@ -248,7 +262,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "LD") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (14 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0xff);
 					}
 					else {
@@ -257,7 +271,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "LDI") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (15 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0xff);
 					}
 					else {
@@ -266,7 +280,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "ST") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (16 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0xff);
 					}
 					else {
@@ -275,7 +289,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "STI") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (17 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0xff);
 					}
 					else {
@@ -293,7 +307,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRn") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (4 << 8) +((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -302,7 +316,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRz") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (2 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -311,7 +325,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRp") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (1 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -320,7 +334,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRnz") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (6 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -329,7 +343,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRzp") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (3 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -338,7 +352,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRnp") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (5 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -347,7 +361,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "BRnzp") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (7 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
 					else {
@@ -370,7 +384,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "JSR") {
-					if (args == 1 && !is_reg(arg[0])) {
+					if (args == 1 && is_num(arg[0])) {
 						code = (21 << 11) + (4 << 8) + ((uint16_t)std::stoi(arg[0]) & 0x3ff);
 					}
 					else {
@@ -436,7 +450,7 @@ int main(int argc, char** argv) {
 					}
 				}
 				else if (chars == "SET") {
-					if (args == 2 && is_reg(arg[0]) && !is_reg(arg[1])) {
+					if (args == 2 && is_reg(arg[0]) && is_num(arg[1])) {
 						code = (27 << 11) + ((arg[0][1] - '0') << 8) + ((uint16_t)std::stoi(arg[1]) & 0xff);
 					}
 					else {
