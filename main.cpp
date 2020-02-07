@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <bitset>
 
 std::string arg[3];
 std::ifstream in;
@@ -493,7 +494,7 @@ int main(int argc, char** argv) {
 				if (single) {
 					out.put(code & 0xff);
 					out.put((code >> 8) & 0xff);
-					out_t << code << ',' << std::endl;
+					out_t << std::bitset<16>(code).to_string() << std::endl;
 				}
 			}
 			out.close();
