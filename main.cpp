@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <bitset>
+#include <algorithm>
 
 std::string arg[3];
 std::ifstream in;
@@ -15,10 +16,10 @@ bool is_arg(const std::string& s)
 		return true;
 	}
 	std::string::const_iterator it = s.begin();
-	if (s.size() != 2 && *it == 'R') {
+	if (s.size() != 2 && ::toupper(*it) == 'R') {
 		return false;
 	}
-	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && (*it == 'R' || *it == '-')))) ++it;
+	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && (::toupper(*it) == 'R' || *it == '-')))) ++it;
 	return !s.empty() && it == s.end();
 }
 
@@ -29,10 +30,10 @@ bool is_str(const std::string& s) {
 bool is_reg(const std::string& s)
 {
 	std::string::const_iterator it = s.begin();
-	if (s.size() != 2 || *it != 'R') {
+	if (s.size() != 2 || ::toupper(*it) != 'R') {
 		return false;
 	}
-	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && *it == 'R'))) ++it;
+	while (it != s.end() && (std::isdigit(*it) || (it == s.begin() && ::toupper(*it) == 'R'))) ++it;
 	return !s.empty() && it == s.end();
 }
 
@@ -62,7 +63,6 @@ bool get_args() {
 				std::cout << "Error - Unexpected Argument '" << arg[i] << "' at line " << line << std::endl;
 				return false;
 			}
-			std::cout << " Arg " << arg[i] << std::endl;
 		}
 		else {
 			return true;
@@ -94,10 +94,10 @@ int main(int argc, char** argv) {
 			line = 0;
 			uint16_t code = 0;
 			while (in >> chars) {
+				transform(chars.begin(), chars.end(), chars.begin(), ::toupper);
 				bool single = true;
 				args = 0;
 				line++;
-				std::cout << "Op " << chars << std::endl;
 				if (!get_args()) {
 					in.close();
 					out.close();
@@ -307,7 +307,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRn") {
+				else if (chars == "BRN") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (4 << 8) +((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
@@ -316,7 +316,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRz") {
+				else if (chars == "BRZ") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (2 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
@@ -325,7 +325,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRp") {
+				else if (chars == "BRP") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (1 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
@@ -334,7 +334,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRnz") {
+				else if (chars == "BRNZ") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (6 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
@@ -343,7 +343,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRzp") {
+				else if (chars == "BRZP") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (3 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
@@ -352,7 +352,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRnp") {
+				else if (chars == "BRNP") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (5 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
@@ -361,7 +361,7 @@ int main(int argc, char** argv) {
 						break;
 					}
 				}
-				else if (chars == "BRnzp") {
+				else if (chars == "BRNZP") {
 					if (args == 1 && is_num(arg[0])) {
 						code = (19 << 11) + (7 << 8) + ((uint16_t)std::stoi(arg[0]) & 0xff);
 					}
