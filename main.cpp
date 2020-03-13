@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
 	}
 	else {
 		in = std::ifstream(argv[1]);
-		std::ofstream out("data2.bin", std::ios_base::binary);
+		std::ofstream out("data.int");
 		std::ofstream out_t("data.txt");
 		if (!in.good()) {
 			return 1;
@@ -492,15 +492,15 @@ int main(int argc, char** argv) {
 					return 1;
 				}
 				if (single) {
-					out.write((char*)&code, sizeof(code));
+					out << code << std::endl;
 					out_t << std::bitset<16>(code).to_string() << " " << std::hex << code << std::endl;
 				}
 			}
 			out.close();
 			out_t.close();
 			if (success) {
-				std::cout << "Compiled binary to 'data.bin'" << std::endl;
-				std::cout << "Compiled text to 'data.txt'" << std::endl;
+				std::cout << "Compiled integers to 'data.int'" << std::endl;
+				std::cout << "Compiled binary text to 'data.txt'" << std::endl;
 			}
 		}
 	}
